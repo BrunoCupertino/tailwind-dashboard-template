@@ -11,6 +11,8 @@ import './charts/ChartjsConfig';
 
 // Import pages
 import Dashboard from './pages/Dashboard';
+import SignIn from './pages/SignIn';
+import GoogleCallback from './pages/GoogleCallback';
 
 function App() {
 
@@ -26,6 +28,8 @@ function App() {
     <>
       <Routes>
         <Route exact path="/" element={<Dashboard />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/auth/google/signin/callback" element={<GoogleCallback />} />
       </Routes>
     </>
   );
