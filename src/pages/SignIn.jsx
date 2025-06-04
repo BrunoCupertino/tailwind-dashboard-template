@@ -1,7 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { FcGoogle } from 'react-icons/fc';
 
 function SignIn() {
+  const navigate = useNavigate();
+  const token = useSelector(state => state.user.token);
+
+  useEffect(() => {
+    // If user is already logged in, redirect to dashboard
+    if (token) {
+      navigate('/');
+    }
+  }, [token, navigate]);
+
   const handleGoogleSignIn = async () => {
     try {
       const response = await fetch('http://localhost:8080/auth/google/signin/url', {
@@ -11,13 +23,11 @@ function SignIn() {
         },
       });
 
-     
       const data = await response.json();
       // Redirect to the Google sign-in URL
       window.location.href = data.Url;
     } catch (error) {
       console.error('Error during Google sign-in:', error);
-      // You might want to show an error message to the user here
     }
   };
 

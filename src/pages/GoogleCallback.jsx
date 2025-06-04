@@ -1,10 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { jwtDecode } from 'jwt-decode';
+import { setUserInfo } from '../store/userSlice';
 
 function GoogleCallback() {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   const hasProcessed = useRef(false);
 
   useEffect(() => {
@@ -32,21 +35,17 @@ function GoogleCallback() {
         const data = await response.json();
         
         if (data.access_token) {
-          // Store the access token
+          // Store the access token in localStorage
           localStorage.setItem('access_token', data.access_token);
           
           // Decode the JWT token
           const decodedToken = jwtDecode(data.access_token);
 
-          // Store user information
-          const nameParts = decodedToken.name.split(' ')
-          localStorage.setItem('user_full_name', decodedToken.name || '');
-          localStorage.setItem('user_first_name', nameParts[0]);
-          localStorage.setItem('user_last_name', nameParts[nameParts.length - 1] || '');
-          localStorage.setItem('user_account_id', decodedToken.acc || '');
-          localStorage.setItem('user_email', decodedToken.email || '');
-          localStorage.setItem('user_roles', JSON.stringify(decodedToken.roles || []));
-          localStorage.setItem('avatar_url', data.avatar_url);
+          // Dispatch the entire decoded token to Redux store
+          dispatch(setUserInfo({
+            token: decodedToken,
+            avatarUrl: data.avatar_url,
+          }));
         }
 
         // After successful callback, redirect to dashboard
@@ -57,7 +56,7 @@ function GoogleCallback() {
     };
 
     handleCallback();
-  }, [location, navigate]);
+  }, [location, navigate, dispatch]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
