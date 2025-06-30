@@ -2,8 +2,10 @@ import React, { useEffect } from 'react';
 import {
   Routes,
   Route,
-  useLocation
+  useLocation,
+  Navigate
 } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 import './css/style.css';
 
@@ -11,6 +13,20 @@ import './charts/ChartjsConfig';
 
 // Import pages
 import Dashboard from './pages/Dashboard';
+import SignIn from './pages/SignIn';
+import GoogleCallback from './pages/GoogleCallback';
+
+// Protected Route component
+const ProtectedRoute = ({ children }) => {
+  const token = useSelector(state => state.user.token);
+  const accessToken = localStorage.getItem('access_token');
+
+  if (!token || !accessToken) {
+    return <Navigate to="/signin" replace />;
+  }
+
+  return children;
+};
 
 function App() {
 
@@ -23,11 +39,18 @@ function App() {
   }, [location.pathname]); // triggered on route change
 
   return (
-    <>
-      <Routes>
-        <Route exact path="/" element={<Dashboard />} />
-      </Routes>
-    </>
+    <Routes>
+      <Route path="/signin" element={<SignIn />} />
+      <Route path="/auth/google/signin/callback" element={<GoogleCallback />} />
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
   );
 }
 

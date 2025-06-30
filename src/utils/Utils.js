@@ -45,7 +45,7 @@ export const adjustColorOpacity = (color, opacity) => {
   } else if (color.startsWith('oklch')) {
     return adjustOKLCHOpacity(color, opacity);
   } else {
-    throw new Error('Unsupported color format');
+    // throw new Error('Unsupported color format');
   }
 };
 
